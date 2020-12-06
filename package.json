@@ -1,0 +1,23 @@
+{
+  "name": "obsidian_box",
+  "version": "1.0.0",
+  "description": "A Discord chat bot to work with an Obsidian vault stored in Dropbox",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewStanton94/ObsidianBox.git"
+  },
+  "author": "Andrew Stanton up683693@myport.ac.uk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndrewStanton94/ObsidianBox/issues"
+  },
+  "homepage": "https://github.com/AndrewStanton94/ObsidianBox#readme",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0"
+  }
+}
