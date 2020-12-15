@@ -5,19 +5,17 @@ import qs from 'qs';
 const { config } = dotenv;
 config();
 
-const auth = async () => {
+const redirectURL = 'http://localhost:3000/token';
+
+export const auth = () => {
 	const { DROPBOX_APP_KEY } = process.env;
-	const url = `https://www.dropbox.com/oauth2/authorize?client_id=${DROPBOX_APP_KEY}&response_type=code`;
-	console.log(url);
-	// try {
-	// 	const res = await axios.get(url);
-	// 	console.log(res.data.data);
-	// } catch (error) {
-	// 	console.error(error);
-	// }
+	const url = `https://www.dropbox.com/oauth2/authorize?client_id=${DROPBOX_APP_KEY}&response_type=code&redirect_uri=${encodeURIComponent(
+		redirectURL
+	)}&token_access_type=offline`;
+	return url;
 };
 
-const getToken = async (userCode) => {
+export const getToken = async (userCode) => {
 	const { DROPBOX_APP_KEY, DROPBOX_APP_SECRET } = process.env;
 	const url = `https://api.dropboxapi.com/oauth2/token`;
 	try {
@@ -26,6 +24,7 @@ const getToken = async (userCode) => {
 			qs.stringify({
 				code: userCode,
 				grant_type: 'authorization_code',
+				redirect_uri: redirectURL,
 			}),
 			{
 				auth: {
@@ -34,11 +33,39 @@ const getToken = async (userCode) => {
 				},
 			}
 		);
-		console.log(res.data);
+		const { access_token } = res.data;
+		console.log(access_token);
+		return res.data;
 	} catch (error) {
-		console.log(error);
-		console.log('Maybe a new code will help?');
-		auth();
+		console.log(error.response.data);
+	}
+};
+
+export const refreshToken = async () => {
+	const {
+		DROPBOX_APP_KEY,
+		DROPBOX_APP_SECRET,
+		DROPBOX_REFRESH_TOKEN,
+	} = process.env;
+	const url = `https://api.dropboxapi.com/oauth2/token`;
+	try {
+		const res = await axios.post(
+			url,
+			qs.stringify({
+				grant_type: 'refresh_token',
+				refresh_token: DROPBOX_REFRESH_TOKEN,
+			}),
+			{
+				auth: {
+					username: DROPBOX_APP_KEY,
+					password: DROPBOX_APP_SECRET,
+				},
+			}
+		);
+		const { access_token } = res.data;
+		return access_token;
+	} catch (error) {
+		console.log(error.response.data);
 	}
 };
 
@@ -65,7 +92,7 @@ const ls = async (token) => {
 		);
 		console.log(res.data);
 	} catch (error) {
-		console.error(error);
+		console.log(error.response.data);
 	}
 };
 
@@ -94,7 +121,7 @@ const upload = async (token) => {
 		);
 		console.log(res.data);
 	} catch (error) {
-		console.error(error);
+		console.log(error.response.data);
 	}
 };
 
@@ -114,6 +141,8 @@ const download = async (token) => {
 		});
 		console.log(res.data);
 	} catch (error) {
-		console.error(error);
+		console.log(error.response.data);
 	}
 };
+
+refreshToken().then((token) => ls(token)).catch((err) => console.error);
