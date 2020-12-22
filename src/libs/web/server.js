@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth, getToken } from './libs/dropboxLib.js';
+import { auth, getToken } from './libs/dropboxLib.js.js';
 
 const link = `<a href="${auth()}">Link</a>`;
 
@@ -7,7 +7,7 @@ const app = express();
 
 app.get('/', (req, res) => res.send('Go to /auth to talk to dropbox'));
 app.get('/auth', (req, res) =>
-	res.send(`<p>Go to ${link} to allow this app to access yout dropbox</p>`)
+	res.send(`<p>Go to ${link} to allow this app to access your dropbox</p>`)
 );
 app.get('/token', async (req, res) => {
 	const { code } = req.query;

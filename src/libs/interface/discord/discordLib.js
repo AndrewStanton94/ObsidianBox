@@ -1,13 +1,10 @@
 import dotenv from 'dotenv';
-import Discord, { Message } from 'discord.js';
-import defaultAction from './commands/default.js';
-import dropbox from './commands/dropbox.js';
+import Discord from 'discord.js';
+import defaultAction from './discordCommands/default.js';
+import dropbox from './discordCommands/dropbox.js';
 
 const { config } = dotenv;
 config();
-
-console.log(process.env.BOT_TOKEN);
-console.log(process.env.BOT_CTA);
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
