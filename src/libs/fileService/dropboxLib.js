@@ -16,7 +16,6 @@ export default class Dropbox {
 	async authenticate(refreshToken) {
 		if (refreshToken) {
 			return this.getNewSessionToken(refreshToken).then((x) => {
-				console.log('Session renewed');
 				return {
 					status: 200,
 					statusText: 'Your session has been renewed',
@@ -90,71 +89,65 @@ export default class Dropbox {
 			);
 			const { access_token } = res.data;
 			this.sessionToken = access_token;
-			console.log(`Session token is now ${this.sessionToken}`);
 			return access_token;
 		} catch (error) {
 			console.log(error.response.data);
 		}
 	}
 
-	async ls() {
+	async ls(path = '/Vault', recursive = false, lsConfig) {
 		const url = 'https://api.dropboxapi.com/2/files/list_folder';
-		console.log('Session token', this.sessionToken);
+		lsConfig = lsConfig ?? {
+			path,
+			recursive,
+			include_media_info: false,
+			include_deleted: false,
+			include_has_explicit_shared_members: false,
+			include_mounted_folders: true,
+			include_non_downloadable_files: false,
+		};
 		try {
-			const res = await axios.post(
-				url,
-				{
-					path: '/Vault',
-					recursive: false,
-					include_media_info: false,
-					include_deleted: false,
-					include_has_explicit_shared_members: false,
-					include_mounted_folders: true,
-					include_non_downloadable_files: false,
+			const res = await axios.post(url, lsConfig, {
+				headers: {
+					Authorization: `Bearer ${this.sessionToken}`,
+					'Content-Type': 'application/json',
 				},
-				{
-					headers: {
-						Authorization: `Bearer ${this.sessionToken}`,
-						'Content-Type': 'application/json',
-					},
-				}
-			);
-			console.log(res.data);
+			});
+			const { entries, cursor, has_more } = res.data;
+			if (has_more) {
+				console.log("There's more data to get.");
+			}
+			return entries;
 		} catch (error) {
 			console.log(error.response.data);
 		}
 	}
 
-	async upload() {
+	async upload(fileContent, path, rev) {
 		const url = 'https://content.dropboxapi.com/2/files/upload';
+		const mode = rev ? { '.tag': 'update', update: rev } : 'add';
 		try {
-			const res = await axios.post(
-				url,
-				Buffer.from(
-					'# Here is some text, pls upload\n\n## Sub heading',
-					'utf-8'
-				),
-				{
-					headers: {
-						Authorization: `Bearer ${this.sessionToken}`,
-						'Content-Type': 'application/octet-stream',
-						'Dropbox-API-Arg': JSON.stringify({
-							path: '/Vault/test.md',
-							mode: 'add',
-							autorename: true,
-							mute: false,
-							strict_conflict: false,
-						}),
-					},
-				}
-			);
-			console.log(res.data);
+			const res = await axios.post(url, fileContent, {
+				headers: {
+					Authorization: `Bearer ${this.sessionToken}`,
+					'Content-Type': 'application/octet-stream',
+					'Dropbox-API-Arg': JSON.stringify({
+						path,
+						mode,
+						autorename: true,
+						mute: false,
+						strict_conflict: false,
+					}),
+				},
+			});
+			return res.data;
 		} catch (error) {
+			console.log('Upload error');
 			console.log(error.response.data);
 		}
 	}
 
-	async download() {
+	async download(fileToDownload, contentType = 'text/plain; charset=utf-8') {
 		const url = 'https://content.dropboxapi.com/2/files/download';
 		try {
 			const res = await axios({
@@ -162,13 +155,14 @@ export default class Dropbox {
 				method: 'post',
 				headers: {
 					Authorization: `Bearer ${this.sessionToken}`,
-					'Content-Type': 'text/plain; charset=utf-8',
+					'Content-Type': contentType,
 					'Dropbox-API-Arg': JSON.stringify({
-						path: '/Vault/test.md',
+						path: fileToDownload,
 					}),
 				},
 			});
-			console.log(res.data);
+			const { data, headers } = res;
+			return { data, meta: JSON.parse(headers['dropbox-api-result']) };
 		} catch (error) {
 			console.log(error.response.data);
 		}
