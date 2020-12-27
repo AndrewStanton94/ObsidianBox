@@ -6,6 +6,7 @@ const eventEmitter = new EventEmitter();
 
 import FileService from './libs/fileService/fileService.js';
 import Interfaces from './libs/interfaces/interfaces.js';
+import ObsidianMD from './libs/obsidianMD.js';
 
 const { Dropbox } = new FileService();
 const { DiscordWrapper } = new Interfaces();
@@ -19,18 +20,6 @@ export default class Core {
 		dropbox
 			.authenticate(DROPBOX_REFRESH_TOKEN)
 			.then((authState) => console.log(authState))
-			// .then(() => dropbox.download('/Vault/test2.md'))
-			// .then(({ data, meta }) => {
-			// 	data = data + '\n\nSome new text';
-			// 	return dropbox.upload(
-			// 		Buffer.from(data, 'utf-8'),
-			// 		'/Vault/test2.md',
-			// 		meta.rev
-			// 	);
-			// })
-			// .then((x) => console.log(x))
-			// .then(() => dropbox.ls())
-			// .then((x) => console.log(x.length))
 			.catch((err) => {
 				if (err?.status === 401) {
 					const { statusText, url } = err;
@@ -38,11 +27,11 @@ export default class Core {
 				}
 				console.error(err);
 			});
+
+		const obsidianMD = new ObsidianMD(eventEmitter, dropbox, {
+			taskFile: '/Vault/test2.md',
+		});
 	}
 }
 
 const core = new Core();
-
-eventEmitter.on('foo', (action, args, msg) => {
-	msg.reply(`You want me to ${action} the message ${args.join(' ')}`);
-});
