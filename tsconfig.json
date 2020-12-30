@@ -4,7 +4,9 @@
 		"allowJs": true,
 		"target": "es6",
 		"esModuleInterop": true,
-		"module": "commonjs",
+		"module": "ES6",
+		"lib": ["ES6"],
+		"moduleResolution": "Node"
 	},
 	"include": ["./src/**/*"]
 }
