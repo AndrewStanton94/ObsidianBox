@@ -2,17 +2,18 @@ import dotenv from 'dotenv';
 import Discord from 'discord.js';
 import defaultAction from './discordCommands/default.js';
 import dropbox from './discordCommands/dropbox.js';
+import { InterfaceClass } from '../interfaceFactory.js';
 
-export default class DiscordWrapper {
+export default class DiscordWrapper implements InterfaceClass {
 	constructor(eventEmitter) {
 		const { config } = dotenv;
 		config();
 
 		const client = new Discord.Client();
-		client.commands = new Discord.Collection();
+		const commands = new Discord.Collection();
 
-		client.commands.set('default', defaultAction);
-		client.commands.set('dropbox', dropbox);
+		commands.set('default', defaultAction);
+		commands.set('dropbox', dropbox);
 
 		client.on('ready', () => {
 			console.log(`Logged in as ${client.user.tag}!`);
@@ -31,11 +32,11 @@ export default class DiscordWrapper {
 
 			switch (action) {
 				case 'dropbox':
-					client.commands.get('dropbox').execute(action, args, msg);
+					commands.get('dropbox').execute(action, args, msg);
 					break;
 
 				default:
-					client.commands.get('default').execute(action, args, msg, eventEmitter);
+					commands.get('default').execute(action, args, msg, eventEmitter);
 					break;
 			}
 		});

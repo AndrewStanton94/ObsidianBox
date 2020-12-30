@@ -1,14 +1,32 @@
+import { EventEmitter } from 'events';
+import { filePath, FileServiceClass } from './fileService/fileServiceFactory';
+
+export interface ObsidianMDConfig {
+	files: {
+		vaultPath: filePath;
+		taskFile: string;
+	};
+	services: {
+		fileService: string;
+		interfaces: string[];
+	};
+}
+
 export default class ObsidianMD {
-	constructor(eventEmitter, fileService, config) {
+	constructor(
+		eventEmitter: EventEmitter,
+		fileService: FileServiceClass,
+		config: ObsidianMDConfig
+	) {
 		eventEmitter.on('foo', (action, args, msg) => {
 			msg.react('👁️').then(() =>
 				fileService
-					.download(config.taskFile)
+					.download(config.files.taskFile)
 					.then(({ data, meta }) => {
 						data = data + `\n\n${args.join(' ')}`;
 						return fileService.upload(
 							Buffer.from(data, 'utf-8'),
-							config.taskFile,
+							config.files.taskFile,
 							meta.rev
 						);
 					})

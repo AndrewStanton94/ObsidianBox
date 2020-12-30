@@ -1,10 +1,31 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
 import qs from 'qs';
+import {
+	APIResponse,
+	fileContent,
+	FileDownload,
+	filePath,
+	FileServiceClass,
+	refreshToken,
+	rev,
+	sessionToken,
+	userCode,
+} from './fileServiceFactory';
 
 const { config } = dotenv;
 
-export default class Dropbox {
+export interface LSConfig {
+	path: filePath;
+	recursive: boolean;
+	include_media_info: boolean;
+	include_deleted: boolean;
+	include_has_explicit_shared_members: boolean;
+	include_mounted_folders: boolean;
+	include_non_downloadable_files: boolean;
+}
+
+export default class Dropbox implements FileServiceClass {
 	static redirectURL = 'http://localhost:3000/token';
 	sessionToken = null;
 
@@ -13,9 +34,9 @@ export default class Dropbox {
 		config();
 	}
 
-	async authenticate(refreshToken) {
+	async authenticate(refreshToken: refreshToken): Promise<APIResponse> {
 		if (refreshToken) {
-			return this.getNewSessionToken(refreshToken).then((x) => {
+			return this.getNewSessionToken(refreshToken).then(() => {
 				return {
 					status: 200,
 					statusText: 'Your session has been renewed',
@@ -32,19 +53,19 @@ export default class Dropbox {
 		}
 	}
 
-	get authURL() {
+	get authURL(): string {
 		const { DROPBOX_APP_KEY } = process.env;
 		const args = qs.stringify({
 			client_id: DROPBOX_APP_KEY,
 			response_type: 'code',
-			redirect_uri: encodeURIComponent(this.redirectURL),
+			redirect_uri: encodeURIComponent(Dropbox.redirectURL),
 			token_access_type: 'offline',
 		});
 		const url = `https://www.dropbox.com/oauth2/authorize?${args}`;
 		return url;
 	}
 
-	async getToken(userCode) {
+	async getToken(userCode: userCode): Promise<any> {
 		const { DROPBOX_APP_KEY, DROPBOX_APP_SECRET } = process.env;
 		const url = `https://api.dropboxapi.com/oauth2/token`;
 		try {
@@ -53,7 +74,7 @@ export default class Dropbox {
 				qs.stringify({
 					code: userCode,
 					grant_type: 'authorization_code',
-					redirect_uri: redirectURL,
+					redirect_uri: Dropbox.redirectURL,
 				}),
 				{
 					auth: {
@@ -70,7 +91,9 @@ export default class Dropbox {
 		}
 	}
 
-	async getNewSessionToken(refresh_token) {
+	async getNewSessionToken(
+		refresh_token: refreshToken
+	): Promise<sessionToken> {
 		const { DROPBOX_APP_KEY, DROPBOX_APP_SECRET } = process.env;
 		const url = `https://api.dropboxapi.com/oauth2/token`;
 		try {
@@ -95,7 +118,11 @@ export default class Dropbox {
 		}
 	}
 
-	async ls(path = '/Vault', recursive = false, lsConfig) {
+	async ls(
+		path = '/Vault',
+		recursive = false,
+		lsConfig: LSConfig
+	): Promise<any> {
 		const url = 'https://api.dropboxapi.com/2/files/list_folder';
 		lsConfig = lsConfig ?? {
 			path,
@@ -123,7 +150,11 @@ export default class Dropbox {
 		}
 	}
 
-	async upload(fileContent, path, rev) {
+	async upload(
+		fileContent: fileContent,
+		path: filePath,
+		rev: rev
+	): Promise<any> {
 		const url = 'https://content.dropboxapi.com/2/files/upload';
 		const mode = rev ? { '.tag': 'update', update: rev } : 'add';
 		try {
@@ -147,7 +178,10 @@ export default class Dropbox {
 		}
 	}
 
-	async download(fileToDownload, contentType = 'text/plain; charset=utf-8') {
+	async download(
+		fileToDownload: filePath,
+		contentType = 'text/plain; charset=utf-8'
+	): Promise<FileDownload> {
 		const url = 'https://content.dropboxapi.com/2/files/download';
 		try {
 			const res = await axios({
@@ -168,7 +202,3 @@ export default class Dropbox {
 		}
 	}
 }
-
-// refreshToken()
-// 	.then((token) => ls(token))
-// 	.catch((err) => console.error);
