@@ -4,9 +4,9 @@ const { config } = dotenv;
 import EventEmitter from 'events';
 const eventEmitter = new EventEmitter();
 
-import FileServiceFactory from './libs/fileService/fileServiceFactory.js';
-import InterfaceFactory from './libs/interfaces/interfaceFactory.js';
-import ObsidianMD, { ObsidianMDConfig } from './libs/obsidianMD.js';
+import Dropbox from './libs/fileService/dropboxLib';
+import Discord from './libs/interfaces/discord/discordLib';
+import ObsidianMD, { ObsidianMDConfig } from './libs/obsidianMD';
 
 export default class Core {
 	constructor(obsidianMDConfig: ObsidianMDConfig) {
@@ -15,17 +15,8 @@ export default class Core {
 		const { DROPBOX_REFRESH_TOKEN } = process.env;
 
 		// Load service modules
-		const activeFileService = FileServiceFactory.getFileService(
-			obsidianMDConfig.services.fileService
-		);
-		const chosenInterfaces = InterfaceFactory.getInterfaces(
-			obsidianMDConfig.services.interfaces
-		);
-
-		const fileService = new activeFileService();
-		const interfaces = chosenInterfaces.map((chosenInterface) =>
-			chosenInterface(eventEmitter)
-		);
+		const fileService = new Dropbox();
+		const discord = new Discord(eventEmitter);
 
 		fileService
 			.authenticate(DROPBOX_REFRESH_TOKEN)
