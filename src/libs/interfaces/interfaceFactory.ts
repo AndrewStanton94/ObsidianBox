@@ -8,11 +8,11 @@ export interface InterfaceOptions {
 export interface InterfaceClass {}
 
 export default class InterfaceFactory {
-	static interfaces: InterfaceOptions = {
+	static interfaces: Record<string, unknown> = {
 		discord: DiscordWrapper,
 	};
 
-	static getInterfaces(names: string[]): InterfaceOptions {
+	static getInterfaces(names: string[]): Record<string, unknown> {
 		return filterObjectProperties(names, this.interfaces);
 	}
 }

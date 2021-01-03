@@ -6,8 +6,8 @@
  */
 export const filterObjectProperties = (
 	desiredKeys: string[],
-	object: object
-): object => {
+	object: Record<string, unknown>
+): Record<string, unknown> => {
 	// Input validation
 	//	Inputs are not empty
 	if (desiredKeys.length < 1) {
@@ -32,7 +32,7 @@ export const filterObjectProperties = (
 	}
 	// /Input validation
 
-	const desiredObjects = new Object();
+	const desiredObjects: Record<string, unknown> = {};
 
 	objectKeys
 		.filter((key) => desiredKeysLowerCase.includes(key.toLowerCase()))
