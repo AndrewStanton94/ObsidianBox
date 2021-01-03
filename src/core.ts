@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 const { config } = dotenv;
 
-import EventEmitter from 'events';
-const eventEmitter = new EventEmitter();
+import EventBus from './libs/utils/event';
 
 import Dropbox from './libs/fileService/dropboxLib';
 import Discord from './libs/interfaces/discord/discordLib';
@@ -15,8 +14,9 @@ export default class Core {
 		const { DROPBOX_REFRESH_TOKEN } = process.env;
 
 		// Load service modules
+		const eventBus = new EventBus();
 		const fileService = new Dropbox();
-		const discord = new Discord(eventEmitter);
+		const discord = new Discord(eventBus);
 
 		fileService
 			.authenticate(DROPBOX_REFRESH_TOKEN)
@@ -29,7 +29,7 @@ export default class Core {
 				console.error(err);
 			});
 
-		new ObsidianMD(eventEmitter, fileService, obsidianMDConfig);
+		new ObsidianMD(eventBus, fileService, obsidianMDConfig);
 	}
 }
 
