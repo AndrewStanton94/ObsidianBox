@@ -1,4 +1,4 @@
-import Dropbox, { LSConfig } from './dropboxLib.js';
+import Dropbox, { LSConfig } from './dropboxLib';
 
 export type userCode = string;
 export type sessionToken = string;
@@ -19,16 +19,26 @@ export interface FileDownload {
 	};
 }
 
-export interface FileServiceClass {
+export abstract class FileServiceClass {
 	// redirectURL: string;
 	sessionToken: string | null;
-	readonly authURL: string;
-	authenticate(refreshToken: refreshToken): Promise<APIResponse>;
-	getToken(userCode: string): Promise<any>;
-	getNewSessionToken(refresh_token: string): Promise<sessionToken>;
-	ls(path: filePath, recursive: boolean, lsConfig?: LSConfig): Promise<any>;
-	upload(fileContent, path: filePath, rev: rev): Promise<any>;
-	download(fileToDownload: filePath, contentType?): Promise<FileDownload>;
+	private readonly _authURL: string;
+	public get authURL(): string {
+		return this._authURL;
+	}
+	abstract authenticate(refreshToken: refreshToken): Promise<APIResponse>;
+	abstract getToken(userCode: string): Promise<any>;
+	abstract getNewSessionToken(refresh_token: string): Promise<sessionToken>;
+	abstract ls(
+		path: filePath,
+		recursive: boolean,
+		lsConfig?: LSConfig
+	): Promise<any>;
+	abstract upload(fileContent, path: filePath, rev: rev): Promise<any>;
+	abstract download(
+		fileToDownload: filePath,
+		contentType?
+	): Promise<FileDownload>;
 }
 
 export default class FileServiceFactory {

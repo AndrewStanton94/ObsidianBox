@@ -25,11 +25,12 @@ export interface LSConfig {
 	include_non_downloadable_files: boolean;
 }
 
-export default class Dropbox implements FileServiceClass {
+export default class Dropbox extends FileServiceClass {
 	static redirectURL = 'http://localhost:3000/token';
 	sessionToken = null;
 
 	constructor() {
+		super();
 		console.log('Dropbox loaded');
 		config();
 	}
