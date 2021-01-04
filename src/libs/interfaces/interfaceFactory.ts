@@ -1,5 +1,5 @@
 import DiscordWrapper from './discord/discordLib.js';
-import { filterObjectProperties } from '../utils/object';
+import { filterObjectProperties } from '../utils/object.js';
 
 export interface InterfaceOptions {
 	discord?: DiscordWrapper;

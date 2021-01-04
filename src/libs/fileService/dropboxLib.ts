@@ -11,7 +11,7 @@ import {
 	rev,
 	sessionToken,
 	userCode,
-} from './fileServiceFactory';
+} from './fileServiceFactory.js';
 
 const { config } = dotenv;
 

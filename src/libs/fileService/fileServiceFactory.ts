@@ -1,4 +1,4 @@
-import Dropbox, { LSConfig } from './dropboxLib';
+import Dropbox, { LSConfig } from './dropboxLib.js';
 
 export type userCode = string;
 export type sessionToken = string;

@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 const { config } = dotenv;
 
-import EventBus from './libs/utils/event';
+import EventBus from './libs/utils/event.js';
 
-import Dropbox from './libs/fileService/dropboxLib';
-import Discord from './libs/interfaces/discord/discordLib';
-import ObsidianMD, { ObsidianMDConfig } from './libs/obsidianMD';
+import Dropbox from './libs/fileService/dropboxLib.js';
+import Discord from './libs/interfaces/discord/discordLib.js';
+import ObsidianMD, { ObsidianMDConfig } from './libs/obsidianMD.js';
 
 export default class Core {
 	constructor(obsidianMDConfig: ObsidianMDConfig) {
