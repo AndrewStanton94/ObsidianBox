@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
 import { filePath, FileServiceClass } from './fileService/fileServiceFactory.js';
+import EventBus from './utils/event.js';
 
 export interface ObsidianMDConfig {
 	files: {
@@ -14,7 +14,7 @@ export interface ObsidianMDConfig {
 
 export default class ObsidianMD {
 	constructor(
-		eventEmitter: EventEmitter,
+		eventEmitter: EventBus,
 		fileService: FileServiceClass,
 		config: ObsidianMDConfig
 	) {
