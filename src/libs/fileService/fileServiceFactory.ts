@@ -43,7 +43,7 @@ export abstract class FileServiceClass {
 
 export default class FileServiceFactory {
 	static fileServices = {
-		dropbox: Dropbox,
+		// dropbox: Dropbox,
 	};
 
 	static getFileService(name: string): FileServiceClass {
