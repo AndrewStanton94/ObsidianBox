@@ -36,7 +36,7 @@ export default class Core {
 new Core({
 	files: {
 		vaultPath: '/Vault',
-		taskFile: '/test2.md',
+		taskFile: 'test2.md',
 	},
 	services: {
 		fileService: 'dropbox',
