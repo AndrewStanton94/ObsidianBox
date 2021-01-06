@@ -137,7 +137,7 @@ export default class Dropbox extends FileServiceClass {
 		fileContent: fileContent,
 		path: filePath,
 		rev: rev
-	): Promise<any> {
+	): Promise<uploadResponse> {
 		const url = 'https://content.dropboxapi.com/2/files/upload';
 		const mode = rev ? { '.tag': 'update', update: rev } : 'add';
 		try {
