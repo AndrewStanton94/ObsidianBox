@@ -2,28 +2,10 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import qs from 'qs';
 import {
-	APIResponse,
-	fileContent,
-	FileDownload,
-	filePath,
 	FileServiceClass,
-	refreshToken,
-	rev,
-	sessionToken,
-	userCode,
 } from './fileServiceFactory.js';
 
 const { config } = dotenv;
-
-export interface LSConfig {
-	path: filePath;
-	recursive: boolean;
-	include_media_info: boolean;
-	include_deleted: boolean;
-	include_has_explicit_shared_members: boolean;
-	include_mounted_folders: boolean;
-	include_non_downloadable_files: boolean;
-}
 
 export default class Dropbox extends FileServiceClass {
 	static redirectURL = 'http://localhost:3000/token';

@@ -1,24 +1,3 @@
-import Dropbox, { LSConfig } from './dropboxLib.js';
-
-export type userCode = string;
-export type sessionToken = string;
-export type refreshToken = string;
-export type filePath = string;
-export type rev = string;
-export type fileContent = string;
-
-export interface APIResponse {
-	status: number;
-	statusText: string;
-}
-
-export interface FileDownload {
-	data: string;
-	meta: {
-		rev: string;
-	};
-}
-
 export abstract class FileServiceClass {
 	// redirectURL: string;
 	sessionToken: string | null;
