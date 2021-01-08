@@ -34,11 +34,11 @@ export default class DiscordWrapper implements InterfaceClass {
 
 			switch (action) {
 				case 'dropbox':
-					commands.get('dropbox').execute(action, args, msg);
+					commands.get('dropbox')['execute'](action, args, msg);
 					break;
 
 				default:
-					commands.get('default').execute(action, args, msg, eventBus);
+					commands.get('default')['execute'](action, args, msg, eventBus);
 					break;
 			}
 		});
