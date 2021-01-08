@@ -38,7 +38,9 @@ export default class DiscordWrapper implements InterfaceClass {
 					break;
 
 				default:
-					commands.get('default')['execute'](action, args, msg, eventBus);
+					commands
+						.get('default')
+						['execute'](action, args, msg, eventBus);
 					break;
 			}
 		});
