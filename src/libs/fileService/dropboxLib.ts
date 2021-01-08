@@ -1,22 +1,40 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
 import qs from 'qs';
-import {
-	FileServiceClass,
-} from './fileServiceFactory.js';
+import { FileServiceClass } from './fileServiceFactory.js';
 
 const { config } = dotenv;
 
+/**
+ * Handles interactions with the Dropbox API
+ *
+ * @export
+ * @class Dropbox
+ * @extends {FileServiceClass}
+ */
 export default class Dropbox extends FileServiceClass {
 	static redirectURL = 'http://localhost:3000/token';
 	sessionToken = null;
 
+	/**
+	 * Creates an instance of Dropbox.
+	 * @memberof Dropbox
+	 */
 	constructor() {
 		super();
 		console.log('Dropbox loaded');
 		config();
 	}
 
+	/**
+	 * Starts the authentication process.
+	 * Takes a refresh token to generate a session token
+	 * Otherwise prompts to use the URL to grant access
+	 *
+	 * @param {refreshToken} refreshToken
+	 * @returns {Promise<APIResponse>}
+	 * @memberof Dropbox
+	 */
 	async authenticate(refreshToken: refreshToken): Promise<APIResponse> {
 		if (refreshToken) {
 			return this.getNewSessionToken(refreshToken).then(() => {
@@ -36,6 +54,13 @@ export default class Dropbox extends FileServiceClass {
 		}
 	}
 
+	/**
+	 * Generates the URL to grant access to a users Dropbox account
+	 *
+	 * @readonly
+	 * @type {string}
+	 * @memberof Dropbox
+	 */
 	get authURL(): string {
 		const { DROPBOX_APP_KEY } = process.env;
 		const args = qs.stringify({
@@ -48,6 +73,15 @@ export default class Dropbox extends FileServiceClass {
 		return url;
 	}
 
+	/**
+	 * Get access with a user generated code.
+	 * The response includes a session token and a refresh token
+	 *
+	 * @param {userCode} userCode Generated when a user grants the app access to their account
+	 * @returns {Promise<any>}
+	 * @memberof Dropbox
+	 * @todo Review this method and update return type
+	 */
 	async getToken(userCode: userCode): Promise<any> {
 		const { DROPBOX_APP_KEY, DROPBOX_APP_SECRET } = process.env;
 		const url = `https://api.dropboxapi.com/oauth2/token`;
@@ -74,6 +108,14 @@ export default class Dropbox extends FileServiceClass {
 		}
 	}
 
+	/**
+	 * Use a refresh token to get a new session token
+	 *
+	 * @param {refreshToken} refresh_token
+	 * @returns {Promise<sessionToken>}
+	 * @memberof Dropbox
+	 * @todo Review the returned data, should I return more information?
+	 */
 	async getNewSessionToken(
 		refresh_token: refreshToken
 	): Promise<sessionToken> {
@@ -101,6 +143,18 @@ export default class Dropbox extends FileServiceClass {
 		}
 	}
 
+	/**
+	 * List the files in a given directory
+	 *
+	 * @param {string} [path='/Vault'] The directory to display
+	 * @param {boolean} [recursive=false] Recurse into deeper directories
+	 * @param {LSConfig} lsConfig Additional options for Dropbox
+	 * @returns {Promise<any>}
+	 * @memberof Dropbox
+	 * @todo Review return type
+	 * @todo Add the path and recursive args to the config object if one is given
+	 * @todo Handle paginated results
+	 */
 	async ls(
 		path = '/Vault',
 		recursive = false,
@@ -133,6 +187,18 @@ export default class Dropbox extends FileServiceClass {
 		}
 	}
 
+	/**
+	 * Upload the content of a file.
+	 * Works with new files or updates
+	 *
+	 * @param {fileContent} fileContent Information to upload
+	 * @param {filePath} path Path including filename
+	 * @param {rev} rev Identifies the last revision downloaded (prevents collisions)
+	 * @returns {Promise<uploadResponse>}
+	 * @memberof Dropbox
+	 * @todo Test this with non-textual data. E.g.an image
+	 * @todo Account for changes made elsewhere
+	 */
 	async upload(
 		fileContent: fileContent,
 		path: filePath,
@@ -161,6 +227,14 @@ export default class Dropbox extends FileServiceClass {
 		}
 	}
 
+	/**
+	 * Download a file
+	 *
+	 * @param {filePath} fileToDownload
+	 * @param {string} [contentType='text/plain; charset=utf-8'] Defaults to UTF-8 text
+	 * @returns {Promise<FileDownload>}
+	 * @memberof Dropbox
+	 */
 	async download(
 		fileToDownload: filePath,
 		contentType = 'text/plain; charset=utf-8'

@@ -4,39 +4,80 @@ import { FileServiceClass } from './fileService/fileServiceFactory.js';
 import EventBus from './utils/event.js';
 import { isURL } from './utils/url.js';
 
+/**
+ * Connects the interfaces to the fileService.
+ * Uses a config object for user settings and preferences
+ *
+ * @export
+ * @class ObsidianMD
+ */
 export default class ObsidianMD {
-	eventEmitter?: EventBus = null;
+	eventBus?: EventBus = null;
 	fileService?: FileServiceClass = null;
 	config?: ObsidianMDConfig = null;
 
+	/**
+	 * Creates an instance of ObsidianMD.
+	 * Sets up the newMessage event handler.
+	 *
+	 * @param {EventBus} eventBus To receive the events emitted from the interfaces
+	 * @param {FileServiceClass} fileService The fileService with the Vault
+	 * @param {ObsidianMDConfig} config User settings
+	 * @memberof ObsidianMD
+	 */
 	constructor(
-		eventEmitter: EventBus,
+		eventBus: EventBus,
 		fileService: FileServiceClass,
 		config: ObsidianMDConfig
 	) {
-		this.eventEmitter = eventEmitter;
+		this.eventBus = eventBus;
 		this.fileService = fileService;
 		this.config = config;
 
-		this.eventEmitter.on(
+		this.eventBus.on(
 			'newMessage',
 			(action: string, args: string[], msg: Message) => {
+				/**
+				 * @returns {fileTrigger[]} Filtered trigger list
+				 */
 				const foundTrigger = config.fileTriggers.filter(
+					/**
+					 * Does the trigger match the action?
+					 * @todo Account for case issues
+					 *
+					 * @param {fileTrigger} { trigger } Destructures the name from the trigger
+					 * @returns {boolean} This this the right trigger
+					 */
+
 					({ trigger }: fileTrigger) => trigger === action
 				);
+
+				/**
+				 * Used when the action doesn't match the trigger.
+				 * Checks if the action is a URL, otherwise it uses a default
+				 * @returns {fileTrigger} Link or default trigger
+				 */
 				const fallBackTrigger = () => {
 					if (isURL(action)) {
 						return config.fileTriggers[0];
 					}
 					return config.fileTriggers[1];
 				};
+				/**
+				 * @returns {fileTrigger} First desired or default trigger
+				 */
 				const selectedTrigger = foundTrigger.length
 					? foundTrigger[0]
 					: fallBackTrigger();
-				const {file, reaction } = selectedTrigger;
+				const { file, reaction } = selectedTrigger;
 				msg.react('👁️')
 					.then(() =>
-						this.updateFile(file, args.join(' '), msg, reaction || '✅')
+						this.updateFile(
+							file,
+							args.join(' '),
+							msg,
+							reaction || '✅'
+						)
 					)
 					.catch((err) => {
 						console.warn('Error from react statement', err);
@@ -45,12 +86,30 @@ export default class ObsidianMD {
 		);
 	}
 
+	/**
+	 * Generate the full filepath of a named file
+	 *
+	 * @param {string} fileName
+	 * @returns {string} Full filename
+	 * @memberof ObsidianMD
+	 */
 	public getFilePath(fileName: string): string {
 		const { vaultPath } = this.config.files;
 		const requiredFile = this.config.files[fileName];
 		return [vaultPath, requiredFile].join('/');
 	}
 
+	/**
+	 * Add given content to a named file
+	 *
+	 * @param {string} fileName File to update
+	 * @param {string} contentToAdd Content to include in the document
+	 * @param {Message} msg Representation of the message received
+	 * @param {string} reaction The emoji to react with on success
+	 * @param {fileModifier} [updateFunction] Alternative modification function
+	 * @returns {Promise<void>}
+	 * @memberof ObsidianMD
+	 */
 	updateFile(
 		fileName: string,
 		contentToAdd: string,
@@ -58,6 +117,12 @@ export default class ObsidianMD {
 		reaction: string,
 		updateFunction?: fileModifier
 	): Promise<void> {
+		/**
+		 * Default update function: add data at the bottom of the file. Separated by 2 lines
+		 * @param {string} existingData
+		 * @param {string} newData
+		 * @returns {string} Updated file content
+		 */
 		const defaultMethod: fileModifier = (
 			existingData: string,
 			newData: string
@@ -66,6 +131,7 @@ export default class ObsidianMD {
 
 		const fullFilePath = this.getFilePath(fileName);
 
+		/* Download specified file, modify it and reupload */
 		return this.fileService
 			.download(fullFilePath)
 			.then(({ data, meta }) => {

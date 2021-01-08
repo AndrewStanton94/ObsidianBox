@@ -1,8 +1,11 @@
 /**
  * Return an object filtered to specific keys
- * @param desiredKeys The names of the values wanted
- * @param object The object containing the values
- * @returns The filtered object
+ * @param {string[]} desiredKeys The names of the values wanted
+ * @param {object} object The object containing the values
+ * @returns {object} The filtered object
+ *
+ * @throws {Error: No keys given} No items requested
+ * @throws {Error: The object is empty} Nothing to filter
  */
 export const filterObjectProperties = (
 	desiredKeys: string[],

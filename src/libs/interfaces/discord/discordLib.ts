@@ -6,7 +6,19 @@ import dropbox from './discordCommands/dropbox.js';
 import { InterfaceClass } from '../interfaceFactory.js';
 import EventBus from '../../utils/event.js';
 
+/**
+ * A class that interacts with Discord.
+ * Messages are received and events are triggered
+ *
+ * @export
+ * @class DiscordWrapper
+ * @implements {InterfaceClass}
+ */
 export default class DiscordWrapper implements InterfaceClass {
+	/**
+	 * Sets up Discord event handlers and logs into Discord
+	 * @param {EventBus} eventBus
+	 */
 	constructor(eventBus: EventBus) {
 		const { config } = dotenv;
 		config();

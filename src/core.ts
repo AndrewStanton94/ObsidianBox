@@ -7,6 +7,12 @@ import Dropbox from './libs/fileService/dropboxLib.js';
 import Discord from './libs/interfaces/discord/discordLib.js';
 import ObsidianMD from './libs/obsidianMD.js';
 
+/**
+ * The starting point. Creating classes for fileService, interfaces and obsidian
+ *
+ * @export
+ * @class Core
+ */
 export default class Core {
 	constructor(obsidianMDConfig: ObsidianMDConfig) {
 		// Get configs
@@ -39,7 +45,7 @@ new Core({
 		taskFile: 'test2.md',
 		linkFile: 'links.md',
 		bookFile: 'books.md',
-		watchFile: 'videos.md'
+		watchFile: 'videos.md',
 	},
 	services: {
 		fileService: 'dropbox',

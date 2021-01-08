@@ -1,4 +1,10 @@
-// Source: https://reactgo.com/javascript-check-string-url/
+/**
+ * Checks if a string is a URL
+ *
+ * Source: {@link https://reactgo.com/javascript-check-string-url/}
+ * @param {string} str
+ * @returns {boolean}
+ */
 export const isURL = (str: string): boolean => {
 	const pattern = new RegExp(
 		'^(https?:\\/\\/)?' + // protocol
