@@ -2,17 +2,7 @@ import { Message } from 'discord.js';
 
 import { FileServiceClass } from './fileService/fileServiceFactory.js';
 import EventBus from './utils/event.js';
-
-export interface ObsidianMDConfig {
-	files: {
-		vaultPath: filePath;
-		taskFile: string;
-	};
-	services: {
-		fileService: string;
-		interfaces: string[];
-	};
-}
+import { isURL } from './utils/url.js';
 
 export default class ObsidianMD {
 	eventEmitter?: EventBus = null;
@@ -31,9 +21,22 @@ export default class ObsidianMD {
 		this.eventEmitter.on(
 			'newMessage',
 			(action: string, args: string[], msg: Message) => {
+				const foundTrigger = config.fileTriggers.filter(
+					({ trigger }: fileTrigger) => trigger === action
+				);
+				const fallBackTrigger = () => {
+					if (isURL(action)) {
+						return config.fileTriggers[0];
+					}
+					return config.fileTriggers[1];
+				};
+				const selectedTrigger = foundTrigger.length
+					? foundTrigger[0]
+					: fallBackTrigger();
+				const {file, reaction } = selectedTrigger;
 				msg.react('👁️')
 					.then(() =>
-						this.updateFile('taskFile', args.join(' '), msg, '✅')
+						this.updateFile(file, args.join(' '), msg, reaction || '✅')
 					)
 					.catch((err) => {
 						console.warn('Error from react statement', err);

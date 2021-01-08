@@ -5,7 +5,7 @@ import EventBus from './libs/utils/event.js';
 
 import Dropbox from './libs/fileService/dropboxLib.js';
 import Discord from './libs/interfaces/discord/discordLib.js';
-import ObsidianMD, { ObsidianMDConfig } from './libs/obsidianMD.js';
+import ObsidianMD from './libs/obsidianMD.js';
 
 export default class Core {
 	constructor(obsidianMDConfig: ObsidianMDConfig) {
@@ -37,9 +37,34 @@ new Core({
 	files: {
 		vaultPath: '/Vault',
 		taskFile: 'test2.md',
+		linkFile: 'links.md',
+		bookFile: 'books.md',
+		watchFile: 'videos.md'
 	},
 	services: {
 		fileService: 'dropbox',
 		interfaces: ['discord'],
 	},
+	fileTriggers: [
+		{
+			trigger: 'link',
+			file: 'linkFile',
+			reaction: '🌐',
+		},
+		{
+			trigger: 'task',
+			file: 'taskFile',
+			reaction: '📑',
+		},
+		{
+			trigger: 'read',
+			file: 'bookFile',
+			reaction: '📗',
+		},
+		{
+			trigger: 'watch',
+			file: 'watchFile',
+			reaction: '🎥',
+		},
+	],
 });
