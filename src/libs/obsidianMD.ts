@@ -56,6 +56,7 @@ export default class ObsidianMD {
 				 * Used when the action doesn't match the trigger.
 				 * Checks if the action is a URL, otherwise it uses a default
 				 * @returns {fileTrigger} Link or default trigger
+				 * @todo Need a better way of specifying the default options
 				 */
 				const fallBackTrigger = () => {
 					if (isURL(action)) {
