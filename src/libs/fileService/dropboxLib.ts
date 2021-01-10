@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
 import qs from 'qs';
-import { FileServiceClass } from './fileServiceFactory.js';
+import { FileServiceClass } from './fileServiceFactory';
 
 const { config } = dotenv;
 

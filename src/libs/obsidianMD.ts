@@ -1,8 +1,8 @@
 import { Message } from 'discord.js';
 
-import { FileServiceClass } from './fileService/fileServiceFactory.js';
-import EventBus from './utils/event.js';
-import { isURL } from './utils/url.js';
+import { FileServiceClass } from './fileService/fileServiceFactory';
+import EventBus from './utils/event';
+import { isURL } from './utils/url';
 
 /**
  * Connects the interfaces to the fileService.

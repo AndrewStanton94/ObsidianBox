@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 const { config } = dotenv;
 
-import EventBus from './libs/utils/event.js';
+import EventBus from './libs/utils/event';
 
-import Dropbox from './libs/fileService/dropboxLib.js';
-import Discord from './libs/interfaces/discord/discordLib.js';
-import ObsidianMD from './libs/obsidianMD.js';
+import Dropbox from './libs/fileService/dropboxLib';
+import Discord from './libs/interfaces/discord/discordLib';
+import ObsidianMD from './libs/obsidianMD';
 
 /**
  * The starting point. Creating classes for fileService, interfaces and obsidian
