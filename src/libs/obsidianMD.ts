@@ -37,19 +37,19 @@ export default class ObsidianMD {
 		this.eventBus.on(
 			'newMessage',
 			(action: string, args: string[], msg: Message) => {
+				action = action.toLowerCase();
 				/**
 				 * @returns {fileTrigger[]} Filtered trigger list
 				 */
 				const foundTrigger = config.fileTriggers.filter(
 					/**
 					 * Does the trigger match the action?
-					 * @todo Account for case issues
 					 *
 					 * @param {fileTrigger} { trigger } Destructures the name from the trigger
 					 * @returns {boolean} This this the right trigger
 					 */
 
-					({ trigger }: fileTrigger) => trigger === action
+					({ trigger }: fileTrigger) => trigger.toLowerCase() === action
 				);
 
 				/**
